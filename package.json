@@ -1,0 +1,24 @@
+{
+  "name": "locke-consumer",
+  "description": "...",
+  "version": "0.0.1",
+  "main": "./lib/consumer.js",
+  "author": "Jakob Mattsson <jakob.mattsson@gmail.com> (jakobmattsson.se)",
+  "engines": {
+    "npm": "1.1.x",
+    "node": "0.8.x"
+  },
+  "scripts": {
+    "pretest": "coffee -c -o lib src",
+    "prepublish": "coffee -c -o lib src",
+    "test": "mocha -r should --compilers coffee:coffee-script spec/*.coffee",
+    "coverage": "sh scripts/coverage.sh spec/consumer.js all.html",
+    "prestart": "coffee -c -o lib src"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "coffee-script": "1.4.0",
+    "should": "1.1.0"
+  }
+}

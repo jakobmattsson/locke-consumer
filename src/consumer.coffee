@@ -1,0 +1,6 @@
+exports.create = ->
+
+  {
+    create: ->
+    del: ->
+  }
