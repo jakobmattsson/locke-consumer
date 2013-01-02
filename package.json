@@ -1,7 +1,7 @@
 {
   "name": "locke-consumer",
-  "description": "...",
-  "version": "0.0.1",
+  "description": "A toolkit for unifying user creation/deletion for apps using locke for authentication",
+  "version": "0.1.0",
   "main": "./lib/consumer.js",
   "author": "Jakob Mattsson <jakob.mattsson@gmail.com> (jakobmattsson.se)",
   "engines": {
