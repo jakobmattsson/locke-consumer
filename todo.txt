@@ -1,0 +1,16 @@
+Locke-ekosystemet
+=================
+* Locke-servern
+* En in-memory implementation av locke som kan användas i tester av komponenter högre upp i stacken
+* En locke-klient över crossdomain XHR mot servern
+* En locke-klient mot in-memory implementationen
+* En locke-webapp för att (1) administrera sina appar och (2) administrera sina centraliserade användaruppgifter, för vanliga användare.
+* En locke-consumer som abstraherar hur man bör arbeta med att skapa och radera konton i sin app. Implementerar ett par olika modeller.
+
+
+
+Olika rollfördelningsmodeller
+=============================
+Servern gör allt - Den traditionella modellen
+Klienten pratar med locke - servern får aldrig lösenordet i klartext
+Proxyanvändare - Användarnamnet är något annat än epostadressen, som måste slås upp av servern

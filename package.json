@@ -5,19 +5,24 @@
   "main": "./lib/consumer.js",
   "author": "Jakob Mattsson <jakob.mattsson@gmail.com> (jakobmattsson.se)",
   "engines": {
-    "npm": "1.1.x",
-    "node": "0.8.x"
+    "npm": ">= 1.1",
+    "node": ">= 0.8"
   },
   "scripts": {
-    "pretest": "coffee -c -o lib src",
-    "prepublish": "coffee -c -o lib src",
-    "test": "mocha -r should --compilers coffee:coffee-script spec/*.coffee",
-    "coverage": "sh scripts/coverage.sh spec/consumer.js all.html",
-    "prestart": "coffee -c -o lib src"
-  },
-  "dependencies": {
+    "prestart": "coffee -co lib src",
+    "pretest": "coffee -co lib src",
+    "prepublish": "coffee -co lib src",
+    "coverage": "jscov src .cov && SRC_DIR=.cov mocha --compilers coffee:coffee-script --reporter mocha-term-cov-reporter spec/*.coffee",
+    "test": "mocha --compilers coffee:coffee-script spec/*.coffee"
   },
   "devDependencies": {
+    "jscov": "0.1.0",
+    "mocha-term-cov-reporter": "0.1.0",
+    "underscore": "1.4.3",
+    "locke-store-mem": "0.3.0",
+    "locke-api": "0.2.3",
+    "mocha": "1.7.4",
+    "sinon": "1.5.2",
     "coffee-script": "1.4.0",
     "should": "1.1.0"
   }
