@@ -14,8 +14,8 @@ Installation
 
 
 
-Example
--------
+Constructing the locke consumer
+-------------------------------
 
 This example assumes there is a locke-reference called `locke` and some kind of sql-interface called `sql`. Also, Bobby Tables disproves of the simplistic practices used here.
 
@@ -52,6 +52,11 @@ This example assumes there is a locke-reference called `locke` and some kind of 
       }
     });
 
+
+
+Creating and deleting users
+---------------------------
+
     users.create('myapp', 'jakob@leanmachine.se', 'foobar', { meta: 'data', anything: 'goes' }, function(err) {
       // User was created if err is undefined
     });
@@ -62,6 +67,27 @@ This example assumes there is a locke-reference called `locke` and some kind of 
 
 
 
+Creating and deleting users locally
+-----------------------------------
+
+This way of creating/deleting users prevent this particular interface from ever accessing the plain text password.
+
+Typical usage would be to have a client-side script create/delete the locke-user and then invoke these methods server-side.
+
+Note that the function `createLocal` requires a token as arguments, which can be produced by calling `locke.authPassword` (on the client, or similar).
+
+    users.createLocal('myapp', 'jakob@leanmachine.se', 'TOKEN', { meta: 'data', anything: 'goes' }, function(err) {
+      // User was created if err is undefined
+    });
+
+    users.delLocal('myapp', 'rick@astley', function(err) {
+      // User was deleted if err is undefined
+    });
+
+
+
 ToDo
 ----
 * Invoking `authPassword` should not generate a token; it should just check if the password is correct.
+* When using the "local" functions, should they be complemented by some client-side functions for the locke-interaction?
+* Should there also be utility functions for creating indirect users (with other user ids than emails)

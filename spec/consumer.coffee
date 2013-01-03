@@ -61,7 +61,7 @@ describe "consumer", ->
       createUser: stub().yields()
       existsUser: stub().yields()
       deleteUser: stub().yields()
-    api.should.have.keys ['create', 'del']
+    api.should.have.keys ['create', 'del', 'createLocal', 'delLocal']
 
 
   [true, false].forEach (uStatus) ->
@@ -244,4 +244,116 @@ describe "consumer", ->
       assert.equal err?.message, 'Incorrect password'
       sass.notCalled proxy.createUser
       sass.notCalled app.createUser
+      done()
+
+
+
+describe 'Local variations', ->
+
+  beforeEach(db.clean)
+
+
+  it "should fail to create a local user if the user does not exist in locke", (done) ->
+
+    app =
+      createUser: stub().yields()
+      existsUser: stub().yields(null, false)
+      deleteUser: stub().yields()
+
+    proxy = spyApi(lockeProxy)
+    api = consumer.construct(_.extend({ locke: proxy }, app))
+
+    api.createLocal 'locke', 'name@user.com', 'invalid-token', {}, (err) ->
+      assert.equal err?.message, "There is no user with the email 'name@user.com' for the app 'locke'"
+      sass.notCalled proxy.createUser
+      sass.notCalled app.createUser
+      done()
+
+
+  it "should fail to create a local user if existsUser yields an error", (done) ->
+
+    app =
+      createUser: stub().yields()
+      existsUser: stub().yields(new Error("doh"))
+      deleteUser: stub().yields()
+
+    proxy = spyApi(lockeProxy)
+    api = consumer.construct(_.extend({ locke: proxy }, app))
+
+    lockeProxy.createUser 'locke', 'name@user.com', 'foobar', noErr ->
+      lockeProxy.authPassword 'locke', 'name@user.com', 'foobar', 1000, noErr (data) ->
+        api.createLocal 'locke', 'name@user.com', data.token, {}, (err) ->
+          assert.equal err?.message, 'doh'
+          sass.notCalled proxy.createUser
+          sass.notCalled app.createUser
+          done()
+
+
+  it "should fail to create a local user if existsUser yields true", (done) ->
+
+    app =
+      createUser: stub().yields()
+      existsUser: stub().yields(null, true)
+      deleteUser: stub().yields()
+
+    proxy = spyApi(lockeProxy)
+    api = consumer.construct(_.extend({ locke: proxy }, app))
+
+    lockeProxy.createUser 'locke', 'name@user.com', 'foobar', noErr ->
+      lockeProxy.authPassword 'locke', 'name@user.com', 'foobar', 1000, noErr (data) ->
+        api.createLocal 'locke', 'name@user.com', data.token, {}, (err) ->
+          assert.equal err?.message, 'User already exists'
+          sass.notCalled proxy.createUser
+          sass.notCalled app.createUser
+          done()
+
+
+  it "should succeed if existsUser yields false", (done) ->
+
+    app =
+      createUser: stub().yields()
+      existsUser: stub().yields(null, false)
+      deleteUser: stub().yields()
+
+    proxy = spyApi(lockeProxy)
+    api = consumer.construct(_.extend({ locke: proxy }, app))
+
+    lockeProxy.createUser 'locke', 'name@user.com', 'foobar', noErr ->
+      lockeProxy.authPassword 'locke', 'name@user.com', 'foobar', 1000, noErr (data) ->
+        api.createLocal 'locke', 'name@user.com', data.token, { info: 1 }, noErr ->
+          sass.notCalled proxy.createUser
+          sass.calledWith app.createUser, 'name@user.com', { info: 1 }
+          done()
+
+
+
+  it "should not be possible to remote delete a user if it exists in locke", (done) ->
+
+    app =
+      createUser: stub().yields()
+      existsUser: stub().yields(null, false)
+      deleteUser: stub().yields()
+
+    proxy = spyApi(lockeProxy)
+    api = consumer.construct(_.extend({ locke: proxy }, app))
+
+    lockeProxy.createUser 'locke', 'name@user.com', 'foobar', noErr ->
+      api.delLocal 'locke', 'name@user.com', (err) ->
+        assert.equal err?.message, 'User has not been deleted in locke'
+        sass.notCalled proxy.deleteUser
+        done()
+
+
+  it "should be possible to remote delete a user if it does not exist in locke", (done) ->
+
+    app =
+      createUser: stub().yields()
+      existsUser: stub().yields(null, true)
+      deleteUser: stub().yields()
+
+    proxy = spyApi(lockeProxy)
+    api = consumer.construct(_.extend({ locke: proxy }, app))
+
+    api.delLocal 'locke', 'name@user.com', noErr ->
+      sass.calledWith app.deleteUser, 'name@user.com'
       done()
