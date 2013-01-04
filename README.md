@@ -19,6 +19,7 @@ Constructing the locke consumer
 
 This example assumes there is a locke-reference called `locke` and some kind of sql-interface called `sql`. Also, Bobby Tables disproves of the simplistic practices used here.
 
+```javascript
     var consumer = require('locke-consumer');
 
     var users = consumer.construct({
@@ -35,7 +36,8 @@ This example assumes there is a locke-reference called `locke` and some kind of 
         });
       },
 
-      // must be stateless.........................................................
+      // This function should yield a boolean stating whether or not the given user exists.
+      // The function should not manipulate any state.
       existsUser: function(username, callback) {
         sql.query('SELECT COUNT(*) FROM users WHERE users.name = ' + username, function(err, result) {
           callback(err, result > 0);
@@ -51,7 +53,7 @@ This example assumes there is a locke-reference called `locke` and some kind of 
         });
       }
     });
-
+```
 
 
 Creating and deleting users
