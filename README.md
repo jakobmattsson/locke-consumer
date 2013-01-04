@@ -1,7 +1,5 @@
-locke-consumer
+locke-consumer [![Build Status](https://secure.travis-ci.org/jakobmattsson/locke-consumer.png)](http://travis-ci.org/jakobmattsson/locke-consumer)
 ==============
-
-[![Build Status](https://secure.travis-ci.org/jakobmattsson/locke-consumer.png)](http://travis-ci.org/jakobmattsson/locke-consumer)
 
 A toolkit for unifying user creation/deletion for apps using locke for authentication.
 
@@ -20,52 +18,60 @@ Constructing the locke consumer
 This example assumes there is a locke-reference called `locke` and some kind of sql-interface called `sql`. Also, Bobby Tables disproves of the simplistic practices used here.
 
 ```javascript
-    var consumer = require('locke-consumer');
 
-    var users = consumer.construct({
+var consumer = require('locke-consumer');
 
-      // Give the consumer a reference to a locke-api
-      locke: locke,
+var users = consumer.construct({
 
-      // This function should create a user with the given username and meta data and then invoke the callback.
-      // The callback doesn't take any arguments, except for an error (if there is one).
-      // Note: there is no need to check if the username if available; it has already been ensured.
-      createUser: function(username, userdata, callback) {
-        sql.query('INSERT INTO users(name, account, admin) VALUES ("' + username + '", ' + userdata.acount + ', ' + userdata.admin + ')', function(err) {
-          callback(err);
-        });
-      },
+  // Give the consumer a reference to a locke-api
+  locke: locke,
 
-      // This function should yield a boolean stating whether or not the given user exists.
-      // The function should not manipulate any state.
-      existsUser: function(username, callback) {
-        sql.query('SELECT COUNT(*) FROM users WHERE users.name = ' + username, function(err, result) {
-          callback(err, result > 0);
-        });
-      },
-
-      // This function should delete the given user and then invoke the callback.
-      // The callback doesn't take any arguments, except for an error (if there is one).
-      // Note: attempting to delete a non-existing user should NOT be an error.
-      deleteUser: function(username, callback) {
-        sql.query('DELETE users WHERE users.name = ' + username, function(err) {
-          callback(err);
-        });
-      }
+  // This function should create a user with the given username and meta data and then invoke the callback.
+  // The callback doesn't take any arguments, except for an error (if there is one).
+  // Note: there is no need to check if the username if available; it has already been ensured.
+  createUser: function(username, userdata, callback) {
+    var values = ["'" + username + "'", userdata.acount, userdata.admin].join(', ');
+    sql.query('INSERT INTO users(name, account, admin) VALUES (' + values + ')', function(err) {
+      callback(err);
     });
+  },
+
+  // This function should yield a boolean stating whether or not the given user exists.
+  // The function should not manipulate any state.
+  existsUser: function(username, callback) {
+    sql.query('SELECT COUNT(*) FROM users WHERE users.name = ' + username, function(err, result) {
+      callback(err, result > 0);
+    });
+  },
+
+  // This function should delete the given user and then invoke the callback.
+  // The callback doesn't take any arguments, except for an error (if there is one).
+  // Note: attempting to delete a non-existing user should NOT be an error.
+  deleteUser: function(username, callback) {
+    sql.query('DELETE users WHERE users.name = ' + username, function(err) {
+      callback(err);
+    });
+  }
+});
+
 ```
+
 
 
 Creating and deleting users
 ---------------------------
 
-    users.create('myapp', 'jakob@leanmachine.se', 'foobar', { meta: 'data', anything: 'goes' }, function(err) {
-      // User was created if err is undefined
-    });
+```javascript
 
-    users.del('myapp', 'rick@astley', 'foobar', function(err) {
-      // User was deleted if err is undefined
-    });
+users.create('myapp', 'jakob@leanmachine.se', 'foobar', { meta: 'data', anything: 'goes' }, function(err) {
+  // User was created if err is undefined
+});
+
+users.del('myapp', 'rick@astley', 'foobar', function(err) {
+  // User was deleted if err is undefined
+});
+
+```
 
 
 
@@ -78,13 +84,17 @@ Typical usage would be to have a client-side script create/delete the locke-user
 
 Note that the function `createLocal` requires a token as arguments, which can be produced by calling `locke.authPassword` (on the client, or similar).
 
-    users.createLocal('myapp', 'jakob@leanmachine.se', 'TOKEN', { meta: 'data', anything: 'goes' }, function(err) {
-      // User was created if err is undefined
-    });
+```javascript
 
-    users.delLocal('myapp', 'rick@astley', function(err) {
-      // User was deleted if err is undefined
-    });
+users.createLocal('myapp', 'jakob@leanmachine.se', 'TOKEN', { meta: 'data', anything: 'goes' }, function(err) {
+  // User was created if err is undefined
+});
+
+users.delLocal('myapp', 'rick@astley', function(err) {
+  // User was deleted if err is undefined
+});
+
+```
 
 
 
