@@ -30,7 +30,7 @@ var users = consumer.construct({
   // The callback doesn't take any arguments, except for an error (if there is one).
   // Note: there is no need to check if the username if available; it has already been ensured.
   createUser: function(username, userdata, callback) {
-    var values = ["'" + username + "'", userdata.acount, userdata.admin].join(', ');
+    var values = ["'" + username + "'", userdata.accountId, userdata.isAdmin].join(', ');
     sql.query('INSERT INTO users(name, account, admin) VALUES (' + values + ')', function(err) {
       callback(err);
     });
@@ -39,7 +39,7 @@ var users = consumer.construct({
   // This function should yield a boolean stating whether or not the given user exists.
   // The function should not manipulate any state.
   existsUser: function(username, callback) {
-    sql.query('SELECT COUNT(*) FROM users WHERE users.name = ' + username, function(err, result) {
+    sql.query("SELECT COUNT(*) FROM users WHERE users.name = '" + username + "'", function(err, result) {
       callback(err, result > 0);
     });
   },
@@ -48,7 +48,7 @@ var users = consumer.construct({
   // The callback doesn't take any arguments, except for an error (if there is one).
   // Note: attempting to delete a non-existing user should NOT be an error.
   deleteUser: function(username, callback) {
-    sql.query('DELETE users WHERE users.name = ' + username, function(err) {
+    sql.query("DELETE users WHERE users.name = '" + username + "'", function(err) {
       callback(err);
     });
   }
