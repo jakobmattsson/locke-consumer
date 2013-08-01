@@ -5,7 +5,7 @@
   "main": "./lib/consumer.js",
   "author": "Jakob Mattsson <jakob.mattsson@gmail.com> (jakobmattsson.se)",
   "engines": {
-    "node": ">= 0.8 < 0.10"
+    "node": ">= 0.8 < 0.12"
   },
   "repository": {
     "type": "git",
