@@ -3,3 +3,7 @@ npm-debug.log
 lib
 test-coverage
 
+!.gitignore
+!.npmignore
+!.travis.yml
+!.bowerrc
